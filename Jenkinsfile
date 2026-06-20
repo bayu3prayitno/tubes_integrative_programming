@@ -1,7 +1,7 @@
 pipeline {
      agent any
      environment {
-          JAVA_HOME = '/usr/lib/jvm/java-21-openjdk-amd64'
+          JAVA_HOME = '/opt/java/openjdk'
           PATH = "${JAVA_HOME}/bin:${env.PATH}"
      }
      triggers {
@@ -10,7 +10,6 @@ pipeline {
      stages {
           stage("Compile") {
                steps {
-                    // sh "./gradlew compileJava"
                     sh "chmod +x gradlew && ./gradlew compileJava"
                }
           }
