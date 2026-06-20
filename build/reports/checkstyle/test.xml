@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<checkstyle version="8.37">
+<file name="/home/bayu/kuliah/tubes_integrative_programming/src/test/java/acceptance/AcceptanceTest.java">
+</file>
+<file name="/home/bayu/kuliah/tubes_integrative_programming/src/test/java/acceptance/StepDefinitions.java">
+</file>
+<file name="/home/bayu/kuliah/tubes_integrative_programming/src/test/java/com/leszko/calculator/CalculatorTest.java">
+</file>
+<file name="/home/bayu/kuliah/tubes_integrative_programming/src/test/java/smoke/SmokeTest.java">
+</file>
+</checkstyle>
