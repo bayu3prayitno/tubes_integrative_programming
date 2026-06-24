@@ -6,113 +6,87 @@ pipeline {
      stages {
           stage("Compile") {
                steps {
-                    dir('sample1') {
-                         sh "chmod +x gradlew"
-                         sh "./gradlew compileJava"
-                    }
+                    sh "chmod +x gradlew"
+                    sh "./gradlew compileJava"
                }
           }
           stage("Unit test") {
                steps {
-                    dir('sample1') {
-                         sh "./gradlew test"
-                    }
+                    sh "./gradlew test"
                }
           }
           stage("Code coverage") {
                steps {
-                    dir('sample1') {
-                         sh "./gradlew jacocoTestReport"
-                         sh "./gradlew jacocoTestCoverageVerification"
-                    }
+                    sh "./gradlew jacocoTestReport"
+                    sh "./gradlew jacocoTestCoverageVerification"
                }
           }
           stage("Static code analysis") {
                steps {
-                    dir('sample1') {
-                         sh "./gradlew checkstyleMain"
-                    }
+                    sh "./gradlew checkstyleMain"
                }
           }
           stage("Package") {
                steps {
-                    dir('sample1') {
-                         sh "./gradlew build"
-                    }
+                    sh "./gradlew build"
                }
           }
 
           stage("Docker build") {
                steps {
-                    dir('sample1') {
-                         sh "docker build -t bayutri22/calculator:${BUILD_TIMESTAMP} ."
-                    }
+                    sh "docker build -t bayutri22/calculator:${BUILD_TIMESTAMP} ."
                }
           }
 
           stage("Docker push") {
                steps {
-                    dir('sample1') {
-                         withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'DOCKER_PASS', usernameVariable: 'DOCKER_USER')]) {
-                              sh "echo \$DOCKER_PASS | docker login -u \$DOCKER_USER --password-stdin"
-                              sh "docker push bayutri22/calculator:${BUILD_TIMESTAMP}"
-                         }
+                    withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'DOCKER_PASS', usernameVariable: 'DOCKER_USER')]) {
+                         sh "echo \$DOCKER_PASS | docker login -u \$DOCKER_USER --password-stdin"
+                         sh "docker push bayutri22/calculator:${BUILD_TIMESTAMP}"
                     }
                }
           }
 
           stage("Update version") {
                steps {
-                    dir('sample1') {
-                         sh "sed -i 's/{{VERSION}}/${BUILD_TIMESTAMP}/g' deployment.yaml"
-                    }
+                    sh "sed -i 's/{{VERSION}}/${BUILD_TIMESTAMP}/g' deployment.yaml"
                }
           }
 
           stage("Deploy to staging") {
                steps {
-                    dir('sample1') {
-                         sh "kubectl config use-context staging"
-                         sh "kubectl apply -f hazelcast.yaml"
-                         sh "kubectl apply -f deployment.yaml"
-                         sh "kubectl apply -f service.yaml"
-                    }
+                    sh "kubectl config use-context staging"
+                    sh "kubectl apply -f hazelcast.yaml"
+                    sh "kubectl apply -f deployment.yaml"
+                    sh "kubectl apply -f service.yaml"
                }
           }
 
           stage("Acceptance test") {
                steps {
-                    dir('sample1') {
-                         sh "kubectl rollout status deployment/calculator-deployment --timeout=180s"
-                         sh "chmod +x acceptance-test.sh && ./acceptance-test.sh"
-                    }
+                    sh "kubectl rollout status deployment/calculator-deployment --timeout=180s"
+                    sh "chmod +x acceptance-test.sh && ./acceptance-test.sh"
                }
           }
 
           stage("Performance test") {
                steps {
-                    dir('sample1') {
-                         sh "chmod +x performance-test.sh && ./performance-test.sh"
-                    }
+                    sh "chmod +x performance-test.sh && ./performance-test.sh"
                }
           }
 
           stage("Release") {
                steps {
-                    dir('sample1') {
-                         sh "kubectl config use-context production"
-                         sh "kubectl apply -f hazelcast.yaml"
-                         sh "kubectl apply -f deployment.yaml"
-                         sh "kubectl apply -f service.yaml"
-                    }
+                    sh "kubectl config use-context production"
+                    sh "kubectl apply -f hazelcast.yaml"
+                    sh "kubectl apply -f deployment.yaml"
+                    sh "kubectl apply -f service.yaml"
                }
           }
           stage("Smoke test") {
                steps {
-                    dir('sample1') {
-                         sh "kubectl rollout status deployment/calculator-deployment --timeout=180s"
-                         sh "chmod +x smoke-test.sh && ./smoke-test.sh"
-                    }
+                    sh "kubectl rollout status deployment/calculator-deployment --timeout=180s"
+                    sh "chmod +x smoke-test.sh && ./smoke-test.sh"
                }
           }
      }
