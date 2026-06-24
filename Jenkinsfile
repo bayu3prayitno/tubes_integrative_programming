@@ -1,9 +1,13 @@
 pipeline {
      agent any
      environment {
-          JAVA_HOME = '/opt/java/openjdk'
-          PATH = "${JAVA_HOME}/bin:${env.PATH}"
-     }
+        DOCKERHUB_CREDS = credentials('kelompok2')
+        KUBECONFIG_FILE = credentials('kubeconfig')
+        IMAGE_NAME = "bayutri22/sample"
+        IMAGE_TAG = "${BUILD_NUMBER}"
+        
+        BUILD_TIMESTAMP = "${new Date().format('yyyyMMdd-HHmmss')}"
+    }
      triggers {
           pollSCM('* * * * *')
      }
@@ -37,13 +41,14 @@ pipeline {
 
           stage("Docker build") {
                steps {
-                    sh "docker build -t leszko/calculator:${BUILD_TIMESTAMP} ."
+                    sh "docker build -t ${IMAGE_NAME}:${BUILD_TIMESTAMP} ."
                }
           }
 
           stage("Docker push") {
                steps {
-                    sh "docker push leszko/calculator:${BUILD_TIMESTAMP}"
+                    sh "echo ${DOCKERHUB_CREDS_PSW} | docker login -u ${DOCKERHUB_CREDS_USR} --password-stdin"
+                    sh "docker push ${IMAGE_NAME}:${BUILD_TIMESTAMP}"
                }
           }
 
