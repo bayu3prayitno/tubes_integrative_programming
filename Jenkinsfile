@@ -7,7 +7,8 @@ pipeline {
           stage("Compile") {
                steps {
                     dir('sample1') {
-                         sh "chmod +x gradlew && ./gradlew compileJava"
+                         sh "chmod +x gradlew"
+                         sh "./gradlew compileJava"
                     }
                }
           }
