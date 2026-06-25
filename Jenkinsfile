@@ -6,6 +6,12 @@ pipeline {
      triggers {
           pollSCM('H/5 * * * *')
      }
+     tools {
+        kubernetesCLI 'kubectl-tool'
+     }
+     steps {
+        sh 'kubectl config use-context staging'
+     }
      stages {
           stage("Compile") {
                steps {
